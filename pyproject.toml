@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "streamlit-pyodide"
+name = "streamlit-frontkit"
 version = "0.1.0"
 description = ""
 authors = ["Yuichiro Tachibana (Tsuchiya) <t.yic.yt@gmail.com>"]

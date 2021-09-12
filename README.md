@@ -1,1 +1,1 @@
-# streamlit-pyodide
+# streamlit-frontkit
