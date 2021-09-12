@@ -65,7 +65,7 @@ class MyComponent extends StreamlitComponentBase<State> {
     // Increment state.numClicks, and pass the new value back to
     // Streamlit via `Streamlit.setComponentValue`.
     this.setState(
-      prevState => ({ numClicks: prevState.numClicks + 1 }),
+      (prevState) => ({ numClicks: prevState.numClicks + 1 }),
       () => Streamlit.setComponentValue({ numClicks: this.state.numClicks })
     )
   }
