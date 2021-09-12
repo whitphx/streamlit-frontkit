@@ -20,6 +20,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "fix:eslint": "eslint --fix 'src/**/*.{ts,tsx}'",
+    "fix:prettier": "prettier --write .",
+    "check:eslint": "eslint --fix 'src/**/*.{ts,tsx}'",
+    "check:prettier": "prettier --check .",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -37,5 +41,8 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "."
+  "homepage": ".",
+  "devDependencies": {
+    "prettier": "2.4.0"
+  }
 }
