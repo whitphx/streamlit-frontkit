@@ -55,13 +55,19 @@ class PyodideLoader extends StreamlitComponentBase<PyodideLoader.State> {
       return null
     }
 
-    const pythonCode = this.props.args["code"]
-    if (typeof pythonCode !== "string") {
+    const pythonCodeChunks = this.props.args["code_chunks"]
+    if (!Array.isArray(pythonCodeChunks)) {
+      return null // TODO: Error
+    }
+    if (pythonCodeChunks.some((codeChunk) => typeof codeChunk !== "string")) {
       return null // TODO: Error
     }
 
     return (
-      <PyodideConsumer pyodide={this.state.pyodide} pythonCode={pythonCode} />
+      <PyodideConsumer
+        pyodide={this.state.pyodide}
+        pythonCodeChunks={pythonCodeChunks}
+      />
     )
   }
 }
