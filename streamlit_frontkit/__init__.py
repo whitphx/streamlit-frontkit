@@ -6,7 +6,7 @@ _RELEASE = False
 
 if not _RELEASE:
     _component_func = components.declare_component(
-        "frontkit",  # TODO: Less generic, more specific name
+        "frontkit",
         url="http://localhost:3001",
     )
 else:
