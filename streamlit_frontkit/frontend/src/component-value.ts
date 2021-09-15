@@ -1,4 +1,4 @@
-import { Streamlit } from "streamlit-component-lib"
+import { Streamlit } from "streamlit-component-lib";
 
 export type Status =
   | "INITIALIZED"
@@ -7,14 +7,14 @@ export type Status =
   | "PROCESSING"
   | "DONE"
   | "PYTHON_ERROR"
-  | "JS_ERROR"
+  | "JS_ERROR";
 
 export interface ComponentValue {
-  result: any
-  error?: Error
-  status: Status
+  result: any;
+  error?: Error;
+  status: Status;
 }
 
 export function setComponentValue(componentValue: ComponentValue) {
-  return Streamlit.setComponentValue(componentValue)
+  return Streamlit.setComponentValue(componentValue);
 }

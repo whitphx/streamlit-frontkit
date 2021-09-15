@@ -1,41 +1,41 @@
-import React from "react"
-import { useCustomCompareEffect } from "use-custom-compare"
-import { setComponentValue } from "./component-value"
+import React from "react";
+import { useCustomCompareEffect } from "use-custom-compare";
+import { setComponentValue } from "./component-value";
 
 interface Pyodide {} // TODO
 
 declare namespace PyodideConsumer {
   export interface Props {
-    pyodide: Pyodide
-    packages: string[]
-    pythonCodeChunks: string[]
+    pyodide: Pyodide;
+    packages: string[];
+    pythonCodeChunks: string[];
   }
 }
 
 const PyodideConsumer: React.VFC<PyodideConsumer.Props> = (props) => {
-  const { pyodide, packages, pythonCodeChunks } = props
+  const { pyodide, packages, pythonCodeChunks } = props;
   useCustomCompareEffect(
     () => {
       setComponentValue({
         result: undefined,
         status: "PROCESSING",
-      })
-      ;(async () => {
+      });
+      (async () => {
         try {
           // @ts-ignore
-          await pyodide.loadPackage(packages)
+          await pyodide.loadPackage(packages);
           // @ts-ignore
-          await pyodide.loadPackage("numpy")
-          console.log("Load package", packages)
-          let result
+          await pyodide.loadPackage("numpy");
+          console.log("Load package", packages);
+          let result;
           for (const codeChunk of pythonCodeChunks) {
             // @ts-ignore
-            result = await pyodide.runPython(codeChunk) // TODO: Run in WebWorker
+            result = await pyodide.runPython(codeChunk); // TODO: Run in WebWorker
           }
           setComponentValue({
             result,
             status: "DONE",
-          })
+          });
         } catch (err) {
           // @ts-ignore
           if (err.name === "PythonError") {
@@ -54,34 +54,34 @@ const PyodideConsumer: React.VFC<PyodideConsumer.Props> = (props) => {
                 __error_address: err.__error_address,
               },
               status: "PYTHON_ERROR",
-            })
+            });
           } else {
             setComponentValue({
               result: undefined,
               // @ts-ignore
               error: undefined,
               status: "JS_ERROR",
-            })
-            throw err
+            });
+            throw err;
           }
         }
-      })()
+      })();
     },
     [pyodide, packages, pythonCodeChunks],
     (prevDeps, nextDeps) => {
       if (prevDeps[0] !== nextDeps[0]) {
-        return false
+        return false;
       }
       if (prevDeps[1].some((imp, i) => imp !== nextDeps[1][i])) {
-        return false
+        return false;
       }
       if (prevDeps[2].some((chunk, i) => chunk !== nextDeps[2][i])) {
-        return false
+        return false;
       }
-      return true
+      return true;
     }
-  )
-  return null
-}
+  );
+  return null;
+};
 
-export default PyodideConsumer
+export default PyodideConsumer;
