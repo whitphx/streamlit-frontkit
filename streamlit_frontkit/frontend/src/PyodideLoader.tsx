@@ -63,10 +63,19 @@ class PyodideLoader extends StreamlitComponentBase<PyodideLoader.State> {
       return null // TODO: Error
     }
 
+    const packages = this.props.args["packages"]
+    if (!Array.isArray(packages)) {
+      return null // TODO: Error
+    }
+    if (packages.some((imp) => typeof imp !== "string")) {
+      return null // TODO: Error
+    }
+
     return (
       <PyodideConsumer
         pyodide={this.state.pyodide}
         pythonCodeChunks={pythonCodeChunks}
+        packages={packages}
       />
     )
   }
