@@ -1,8 +1,8 @@
-import React, { useCallback, useState, useEffect, useRef } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 
 declare namespace CameraInput {
   export interface Props {
-    onFrame: (bitmap: ImageBitmap) => void | Promise<void>;
+    onFrame: (bitmap: ImageData) => void | Promise<void>;
   }
 }
 
@@ -16,14 +16,28 @@ const CameraInput: React.VFC<CameraInput.Props> = (props) => {
       return;
     }
 
+    const canvasElem = document.createElement("canvas");
+    const canvasCtx = canvasElem.getContext("2d");
+    if (canvasCtx == null) {
+      console.error("Failed to get canvas context.");
+      setPlaying(false);
+      return;
+    }
+
     const videoElem = document.createElement("video");
 
     let lastFrameTime: number | null = null;
     const onAnimationFrame = async () => {
       if (!videoElem.paused && videoElem.currentTime !== lastFrameTime) {
         lastFrameTime = videoElem.currentTime;
-        const bitmap = await createImageBitmap(videoElem);
-        await onFrame(bitmap);
+        canvasCtx.drawImage(videoElem, 0, 0);
+        const imageData = canvasCtx.getImageData(
+          0,
+          0,
+          canvasElem.width,
+          canvasElem.height
+        );
+        await onFrame(imageData);
       }
 
       waitForNextAnimationFrame();
@@ -41,6 +55,8 @@ const CameraInput: React.VFC<CameraInput.Props> = (props) => {
       stream = _stream;
       videoElem.srcObject = stream;
       videoElem.onloadedmetadata = function () {
+        canvasElem.width = videoElem.videoWidth;
+        canvasElem.height = videoElem.videoHeight;
         videoElem.play();
         waitForNextAnimationFrame();
       };

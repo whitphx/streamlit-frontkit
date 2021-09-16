@@ -57,18 +57,18 @@ import sys
 sys.version
 """
     st.write("Input:", code)
-    status, result, error = frontkit(code)
+    status, result, error = frontkit(code, ["scikit-image"])
     st.write("status = ", status)
     st.write("result = ", result)
     st.write("error = ", error)
 
-    def func():
-        import numpy as np
+    # def func():
+    #     import numpy as np
 
-        return float(np.arange(0, 10).sum())
+    #     return float(np.arange(0, 10).sum())
 
-    st.write("Input:", func)
-    status, result, error = frontkit(func, packages=["numpy"])
-    st.write("status = ", status)
-    st.write("result = ", result)
-    st.write("error = ", error)
+    # st.write("Input:", func)
+    # status, result, error = frontkit(func, packages=["numpy"])
+    # st.write("status = ", status)
+    # st.write("result = ", result)
+    # st.write("error = ", error)

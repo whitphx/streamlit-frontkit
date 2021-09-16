@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useCallback, useRef } from "react";
+import { Streamlit } from "streamlit-component-lib";
 import { useCustomCompareEffect } from "use-custom-compare";
 import { setComponentValue } from "./component-value";
 import { Pyodide } from "./PyodideProvider";
+import CameraInput from "./CameraInput";
 
 declare namespace PyodideConsumer {
   export interface Props {
@@ -80,7 +82,81 @@ const PyodideConsumer: React.VFC<PyodideConsumer.Props> = (props) => {
       return true;
     }
   );
-  return null;
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const onFrame = useCallback(
+    async (imageData: ImageData) => {
+      /* eslint-disable no-restricted-globals */
+      // @ts-ignore
+      self.imagewidth = imageData.width;
+      // @ts-ignore
+      self.imageheight = imageData.height;
+      // @ts-ignore
+      self.jsarray = imageData.data;
+      /* eslint-enable */
+      // @ts-ignore
+      await pyodide.runPython(`
+        from js import jsarray, imagewidth, imageheight
+        array = jsarray.to_py()
+        import numpy as np
+        input_image = np.asarray(array).reshape((imageheight, imagewidth, 4))
+
+        import skimage
+        grayscale = skimage.color.rgb2gray(input_image)
+        output_array = skimage.color.gray2rgb(grayscale)
+
+        alpha = np.ones((imageheight, imagewidth, 1), dtype=np.uint8)
+        output_array = np.concatenate((output_array, alpha), axis=2).copy()
+        output_array = skimage.util.img_as_ubyte(output_array)
+
+        output_height, output_width = output_array.shape[:2]
+    `); // TODO: Run in WebWorker
+
+      // @ts-ignore
+      const proxy = pyodide.globals.get("output_array");
+      // @ts-ignore
+      const output_width = pyodide.globals.get("output_width");
+      // @ts-ignore
+      const output_height = pyodide.globals.get("output_height");
+      const buffer = proxy.getBuffer("u8");
+      proxy.destroy();
+      try {
+        const newImageData = new ImageData(
+          new Uint8ClampedArray(
+            buffer.data.buffer,
+            buffer.data.byteOffset,
+            buffer.data.byteLength
+          ),
+          output_width,
+          output_height
+        );
+        const canvasElem = canvasRef.current;
+        if (canvasElem) {
+          if (
+            canvasElem.width !== output_width ||
+            canvasElem.height !== output_height
+          ) {
+            canvasElem.width = output_width;
+            canvasElem.height = output_height;
+            Streamlit.setFrameHeight();
+          }
+          const ctx = canvasElem.getContext("2d");
+          ctx?.putImageData(newImageData, 0, 0);
+        }
+      } finally {
+        buffer.release(); // Release the memory when we're done
+      }
+    },
+    [pyodide]
+  );
+
+  return (
+    <div>
+      <CameraInput onFrame={onFrame} />
+      <canvas ref={canvasRef} />
+    </div>
+  );
 };
 
 export default PyodideConsumer;
