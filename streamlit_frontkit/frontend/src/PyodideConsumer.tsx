@@ -1,8 +1,7 @@
 import React from "react";
 import { useCustomCompareEffect } from "use-custom-compare";
 import { setComponentValue } from "./component-value";
-
-interface Pyodide {} // TODO
+import { Pyodide } from "./PyodideProvider";
 
 declare namespace PyodideConsumer {
   export interface Props {

@@ -1,10 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import PyodideLoader from "./PyodideLoader";
+import PyodideProvider from "./PyodideProvider";
+import PyodideApp from "./PyodideApp";
 
 ReactDOM.render(
   <React.StrictMode>
-    <PyodideLoader />
+    <PyodideProvider>
+      <PyodideApp />
+    </PyodideProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
