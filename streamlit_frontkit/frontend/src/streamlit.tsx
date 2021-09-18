@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Streamlit, RenderData } from "streamlit-component-lib";
 
 export const useStreamlit = (): RenderData | undefined => {
@@ -30,3 +30,35 @@ export const useStreamlit = (): RenderData | undefined => {
 
   return renderData;
 };
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+interface ErrorBoundaryState {
+  error: Error | undefined;
+}
+export class ErrorBoundary extends React.PureComponent<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { error: undefined };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    // Update state so the next render will show the fallback UI.
+    return { error };
+  }
+
+  render() {
+    if (this.state.error != null) {
+      <div>
+        <h1>Component Error</h1>
+        <span>{this.state.error.message}</span>
+      </div>;
+    }
+
+    return this.props.children;
+  }
+}

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { usePyodide } from "./PyodideProvider";
-import { useStreamlit } from "./streamlit";
+import { useStreamlit, ErrorBoundary } from "./streamlit";
 import { setComponentValue } from "./component-value";
 import PyodideConsumer from "./PyodideConsumer";
 
@@ -43,11 +43,13 @@ const PyodideApp: React.VFC = () => {
   }
 
   return (
-    <PyodideConsumer
-      pyodide={pyodide}
-      pythonCodeChunks={pythonCodeChunks}
-      packages={packages}
-    />
+    <ErrorBoundary>
+      <PyodideConsumer
+        pyodide={pyodide}
+        pythonCodeChunks={pythonCodeChunks}
+        packages={packages}
+      />
+    </ErrorBoundary>
   );
 };
 
