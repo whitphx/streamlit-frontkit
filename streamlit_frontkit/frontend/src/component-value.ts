@@ -2,8 +2,6 @@ import { Streamlit } from "streamlit-component-lib";
 
 export type Status =
   | "INITIALIZED"
-  | "LOADING_PYODIDE"
-  | "IDLE"
   | "PROCESSING"
   | "DONE"
   | "PYTHON_ERROR"
